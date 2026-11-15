@@ -77,7 +77,7 @@
     script.addEventListener('error', () => { player.dataset.playerState = 'error'; });
     document.body.append(script);
   };
-  addScript(`https://play.boomstream.net/${player.dataset.videoCode}/config.jsonp`);
+  addScript(`https://play.boomstream.net/${player.dataset.videoCode}/config.jsonp?title=0`);
   addScript('https://play.boomstream.net/assets/javascripts/biframesdk.js?v=1.5.0');
   setTimeout(() => { if (!hasLoaded) player.dataset.playerState = 'error'; }, 20000);
 })();
