@@ -21,7 +21,8 @@
   const host = window.location.hostname.replace(/^www\./, '');
   if (host === 'hwdmedia.ru' || host === 'hwdmedia.com') {
     document.querySelectorAll('[data-language]').forEach(link => {
-      link.href = link.dataset.language === 'ru' ? 'https://hwdmedia.ru/' : 'https://hwdmedia.com/';
+      const languageRoot = link.dataset.language === 'ru' ? 'https://hwdmedia.ru/' : 'https://hwdmedia.com/';
+      link.href = languageRoot + (link.dataset.languagePath || '');
     });
   }
   const languageMenu = document.querySelector('.language');
@@ -29,30 +30,32 @@
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && languageMenu.open) { languageMenu.open = false; languageMenu.querySelector('summary').focus(); } });
 
   const dialog = document.querySelector('.photo-dialog');
-  const fullImage = dialog.querySelector('.dialog-image');
-  const closeButton = dialog.querySelector('.dialog-close');
-  let previousFocus;
-  document.querySelectorAll('[data-portrait]').forEach(button => button.addEventListener('click', () => {
-    previousFocus = button;
-    fullImage.src = button.dataset.portrait;
-    fullImage.alt = button.dataset.name;
-    dialog.querySelector('.dialog-caption').textContent = button.dataset.name;
-    dialog.querySelector('.dialog-role').textContent = button.dataset.role;
-    dialog.querySelector('.dialog-original').href = button.dataset.portrait;
-    dialog.showModal();
-    document.body.classList.add('dialog-open');
-    closeButton.focus();
-  }));
-  closeButton.addEventListener('click', () => dialog.close());
-  dialog.addEventListener('click', event => {
-    const bounds = dialog.getBoundingClientRect();
-    if (event.target === dialog && (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom)) dialog.close();
-  });
-  dialog.addEventListener('close', () => {
-    document.body.classList.remove('dialog-open');
-    fullImage.removeAttribute('src');
-    previousFocus?.focus();
-  });
+  if (dialog) {
+    const fullImage = dialog.querySelector('.dialog-image');
+    const closeButton = dialog.querySelector('.dialog-close');
+    let previousFocus;
+    document.querySelectorAll('[data-portrait]').forEach(button => button.addEventListener('click', () => {
+      previousFocus = button;
+      fullImage.src = button.dataset.portrait;
+      fullImage.alt = button.dataset.name;
+      dialog.querySelector('.dialog-caption').textContent = button.dataset.name;
+      dialog.querySelector('.dialog-role').textContent = button.dataset.role;
+      dialog.querySelector('.dialog-original').href = button.dataset.portrait;
+      dialog.showModal();
+      document.body.classList.add('dialog-open');
+      closeButton.focus();
+    }));
+    closeButton.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', event => {
+      const bounds = dialog.getBoundingClientRect();
+      if (event.target === dialog && (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom)) dialog.close();
+    });
+    dialog.addEventListener('close', () => {
+      document.body.classList.remove('dialog-open');
+      fullImage.removeAttribute('src');
+      previousFocus?.focus();
+    });
+  }
 
   const player = document.querySelector('.player');
   const playerTitle = player.dataset.title;
